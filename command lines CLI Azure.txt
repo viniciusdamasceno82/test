@@ -1,0 +1,51 @@
+CRIAR VM
+az vm create \
+  --name myVM \
+  --resource-group 85890f82-e1cd-4462-aebd-06896e621533 \
+  --image Win2016Datacenter \
+  --size Standard_DS2_v2 \
+  --location eastus \
+  --admin-username vinifreak \
+  --admin-password *Perola2017*
+
+VERIFICAR STATUS VM
+az vm get-instance-view \
+  --name myVM \
+  --resource-group 85890f82-e1cd-4462-aebd-06896e621533 \
+  --output table
+
+CONFIGURAR IIS
+az vm extension set \
+  --resource-group 85890f82-e1cd-4462-aebd-06896e621533 \
+  --vm-name myVM \
+  --name CustomScriptExtension \
+  --publisher Microsoft.Compute \
+  --settings '{"fileUris":["https://raw.githubusercontent.com/MicrosoftDocs/mslearn-welcome-to-azure/master/configure-iis.ps1"]}' \
+  --protected-settings '{"commandToExecute": "powershell -ExecutionPolicy Unrestricted -File configure-iis.ps1"}'
+
+ABRIR PORTA HTTP 
+az vm open-port \
+  --name myVM \
+  --resource-group 85890f82-e1cd-4462-aebd-06896e621533 \
+  --port 80
+
+PEGAR IP
+az vm show \
+  --name myVM \
+  --resource-group 85890f82-e1cd-4462-aebd-06896e621533 \
+  --show-details \
+  --query [publicIps] \
+  --output tsv
+
+ESCALAR VERTICALMENTE
+az vm resize \
+  --resource-group 85890f82-e1cd-4462-aebd-06896e621533 \
+  --name myVM \
+  --size Standard_DS3_v2
+
+VERIFICAR TAMANHO
+az vm show \
+  --resource-group 85890f82-e1cd-4462-aebd-06896e621533 \
+  --name myVM \
+  --query "hardwareProfile" \
+  --output tsv
